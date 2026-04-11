@@ -1,3 +1,7 @@
 # Notes
+
 2017
-Propoised transformer architecture
+Propoised transformer Architecture
+
+Transfoer
+![alt text](image.png)
