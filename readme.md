@@ -1,7 +1,9 @@
 # Build GPT
 
-Highly inspired form the Andrej Karpathy's video Let's build GPT: from scract, in code, spelled out. Link to the video is: https://www.youtube.com/watch?v=kCc8FmEb1nY&t=1134s
-
+Highly inspired form the Andrej Karpathy's video Let's build GPT: from scract, in code, spelled out. Link to the video is:
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=kCc8FmEb1nY
+" target="_blank"><img src="http://img.youtube.com/vi/kCc8FmEb1nY/0.jpg" 
+alt="Andrej Karpathy's video Let's build GPT: from scract, in code, spelled out. " width="240" height="180" border="10" /></a>
 
 What this project is not intended to do:
 1. Replace ChatGPT as this project will be a relatively simple implementation to test and prove the working of transformer architecture and the dataset used is fraction of what the ChatGPT is tranined on i.e. most of the internet.
