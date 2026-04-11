@@ -9,3 +9,10 @@ What this project is not intended to do:
 1. Replace ChatGPT as this project will be a relatively simple implementation to test and prove the working of transformer architecture and the dataset used is fraction of what the ChatGPT is tranined on i.e. most of the internet.
 2. Additionally, ChatGPT goes through multiple cycle of pre-traning and fine-tuning and here definitely that is not something I am intent to replicate.
 3. Training budget of ChatGPT is multi-million on state-of-the-art architecture and your truely has humble beginning and used a 2021 MacBook Pro M1 with 8GB of RAM and a 512GM of straoge.
+
+
+What this project is:
+1. Transformer based Language Model (Character level language model)
+
+Dataset:
+1. Tiny Shakespeare
