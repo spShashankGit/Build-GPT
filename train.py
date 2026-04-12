@@ -236,6 +236,6 @@ print(f'train loss {loss.item()}')
 
 # idx = torch.zeros((1,1), dtype=torch.long)
 # print(decoding(m.generate(idx, max_new_tokens=500)[0].tolist()))
-
+print('----')
 context = torch.zeros((1,1), dtype=torch.long, device=device)
 print(decoding(m.generate(context, max_new_tokens=100)[0].tolist()))
