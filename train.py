@@ -1,29 +1,28 @@
-# %% [markdown]
 # # Train the GPT
+import torch
+import torch.nn as nn
+from torch.nn import functional as F
 
-# %% [markdown]
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+eval_interval = 300
+
 # ## 1. Get the dataset
 
-# %%
+
 # GPT is a probabilitsic model therefore the response it generate for a prompt is non-deterministic.
 with open('dataset/tiny.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 # Tiny Shakespeare dataset is used because it is short enought to train on the local computer but long enough i.e. 1 Million characters that it will be hard for a human to cheat/augment the model by providing the answers or regex.
 
-# %% [markdown]
+
 # ### 1. See the dataset
 
-# %% [markdown]
-# 
 
-# %%
 print('First 500 characters of the dataset:')
 print(text[:500])
 
-# %% [markdown]
 # ## 2. Character level Encoding and Decoding Strategy
 
-# %%
 # Find out how many unique characters are there in this dataset?
 # For english text we expect it around 65ish characters (lowercase, uppercase, digits, punctuation, whitespace)
 # For code we expect more due to brackets, oprators, special symbold etc.
@@ -32,7 +31,6 @@ vocab_size = len(chars)
 print('Unique characters in the dataset are: ', ''.join(chars))
 print('Unique characters in the dataset:', vocab_size)
 
-# %%
 # Strategy to tokenise the input text
 # Assing a integer to the word that is in the dataset. This assignment is based on the vocabulary of possible elements. 
 # Because we are building a character level language model, we will asign an integer to each unique character in the dataset. So if A is 1 and then D is 4, word ADD becomes 144
@@ -53,11 +51,8 @@ print(decoding(encoding("ADD")))
 ## In tikToken, instead of 65 tokens it has 50,257 tokens. This encoding strategy was used for GPT 2.
 ## Why this matter, you can have very long dictionary of words with very small secquence of integers. Or you have a very small dictionary wiht a large sequeence of integers.
 
-# %% [markdown]
 # ## 3. Tokenise the dataset based on Encoding strategy defined in previous step
 
-# %%
-import torch
 data = torch.tensor(encoding(text), dtype=torch.long)
 print(data.shape, data.dtype)
 
@@ -122,6 +117,7 @@ def get_batch(split):
     offset = torch.randint(len(data) - context_length, (batch_size,))
     x = torch.stack([data[i:i+context_length] for i in offset])
     y = torch.stack([data[i+1:i+context_length+1] for i in offset])
+    x,y = x.to(device), y.to(device)
     return x, y
 
 xb,yb = get_batch('train')
@@ -154,13 +150,8 @@ print(xb)
 # 
 # 16-core Neural Engine
 
-# %% [markdown]
 # ## 5. Bygram Language Model
 
-# %%
-import torch
-import torch.nn as nn
-from torch.nn import functional as F
 torch.manual_seed(1337)
 
 class BigramLanguageModel(nn.Module):
@@ -211,8 +202,8 @@ print(logits.shape)
 print(loss)
 # Expectation is -ln(1/65) = 4,17
 
-# %%
-m = BigramLanguageModel(vocab_size)
+model = BigramLanguageModel(vocab_size)
+m = model.to(device)
 logits, loss = m(xb, yb)
 print(logits.shape)
 print(loss)
@@ -221,13 +212,11 @@ print(loss)
 idx = torch.zeros((1,1), dtype=torch.long)
 print(decoding(m.generate(idx, max_new_tokens=100)[0].tolist()))
 
-# %%
 # Create a python optimisser
 
 optimiszer = torch.optim.AdamW(m.parameters(), lr=1e-3)
 print(optimiszer)
 
-# %%
 batch_size = 32
 for steps in range(10000):
     # sample a batch of data
@@ -242,15 +231,11 @@ for steps in range(10000):
     optimiszer.step()
 print(f'train loss {loss.item()}')
 
-# %%
-idx = torch.zeros((1,1), dtype=torch.long)
-print(decoding(m.generate(idx, max_new_tokens=100)[0].tolist()))
+# idx = torch.zeros((1,1), dtype=torch.long)
+# print(decoding(m.generate(idx, max_new_tokens=100)[0].tolist()))
 
-# %%
-idx = torch.zeros((1,1), dtype=torch.long)
-print(decoding(m.generate(idx, max_new_tokens=500)[0].tolist()))
+# idx = torch.zeros((1,1), dtype=torch.long)
+# print(decoding(m.generate(idx, max_new_tokens=500)[0].tolist()))
 
-# %%
-
-
-
+context = torch.zeros((1,1), dtype=torch.long, device=device)
+print(decoding(m.generate(context, max_new_tokens=100)[0].tolist()))
