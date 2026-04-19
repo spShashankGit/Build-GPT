@@ -144,11 +144,8 @@ for b in range(batch_size):
 # %% [markdown]
 # ## Training hardware is
 # MacBook Pro M1 - 2021
-# 
 # 8-core CPU with 4 performance cores and 4 efficiency cores
-# 
 # 8-core GPU
-# 
 # 16-core Neural Engine
 
 # ## 5. Bygram Language Model
