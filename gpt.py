@@ -6,6 +6,7 @@ from torch.nn import functional as F
 batch_size = 4
 context_length = 8
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+torch.manual_seed(1337)
 eval_interval = 300
 n_embed = 32
 block_size = 32
@@ -110,7 +111,6 @@ for t in range(context_length):
 # block size is the number of context that will be sent to the model for training.
 # Batch is used so that we can make use of the parallel processing power of the GPUs.
 # In production system: The bactch size is also a hyperprameter that needs to be tunes by conduting experiements. We are optimising for the efficiency.
-torch.manual_seed(1337)
 
 # This function will be used to get the batch for the training and the test set.
 def get_batch(split):
@@ -149,8 +149,6 @@ for b in range(batch_size):
 # 16-core Neural Engine
 
 # ## 5. Bygram Language Model
-
-torch.manual_seed(1337)
 
 class BigramLanguageModel(nn.Module):
     def __init__(self):
