@@ -158,10 +158,13 @@ torch.manual_seed(1337)
 class BigramLanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embed)
+        self.lm_head = nn.Linear(n_embed, vocab_size)
+
 
     def forward(self, idx, targets=None):
-        logits = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
+        tok_emb = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
+        logits = self.lm_head(tok_emb) # (B,T, vocab_size)
         
         if targets is None:
             loss = None
