@@ -5,9 +5,14 @@ from torch.nn import functional as F
 
 batch_size = 4
 context_length = 8
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+max_iters = 3000
 eval_interval = 300
+learning_rate = 1e-2
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+eval_iters = 200
 n_embed = 32
+# -----
+
 
 # ## 1. Get the dataset
 
@@ -63,7 +68,7 @@ print(data.shape, data.dtype)
 # ## 3.1 Data Tensor
 
 # %%
-print('CP 1: Data Tensor first 500 characters', data[:500])
+#print('CP 1: Data Tensor first 500 characters', data[:500])
 
 # %% [markdown]
 # ## 3.2 Train and Test splits
@@ -112,6 +117,7 @@ for t in range(context_length):
 # In production system: The bactch size is also a hyperprameter that needs to be tunes by conduting experiements. We are optimising for the efficiency.
 torch.manual_seed(1337)
 
+
 # This function will be used to get the batch for the training and the test set.
 def get_batch(split):
     data = train_data if split == 'train' else test_data
@@ -158,11 +164,14 @@ torch.manual_seed(1337)
 class BigramLanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embed)
+        self.lm_head = nn.Linear(n_embed, vocab_size)
 
     def forward(self, idx, targets=None):
-        logits = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
         
+        tok_emb = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
+        logits = self.lm_head(tok_emb) # (B,T, vocab_size)
+
         if targets is None:
             loss = None
         else:
