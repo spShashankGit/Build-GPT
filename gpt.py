@@ -8,7 +8,7 @@ context_length = 8
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 eval_interval = 300
 n_embed = 32
-
+block_size = 32
 # ## 1. Get the dataset
 
 
@@ -159,11 +159,14 @@ class BigramLanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, n_embed)
+        self.position_embedding_table = nn.Embedding(block_size, n_embed)
         self.lm_head = nn.Linear(n_embed, vocab_size)
 
 
     def forward(self, idx, targets=None):
         tok_emb = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
+        pos_emb = self.position_embedding_table(torch.arrange(T, device=device)) # (T,c)
+        x = tok_emb + pos_emb #(B,T,C)
         logits = self.lm_head(tok_emb) # (B,T, vocab_size)
 
         if targets is None:
