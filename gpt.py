@@ -100,7 +100,7 @@ x = train_data[:context_length]
 y = train_data[1:context_length+1]
 
 for t in range(context_length):
-    context_length = x[:t+1]
+    context = x[:t+1]
     target = y[t]
     print(f'When the input is {context_length} the target is {target}')
 
@@ -165,7 +165,7 @@ class BigramLanguageModel(nn.Module):
     def forward(self, idx, targets=None):
         tok_emb = self.token_embedding_table(idx) # (B,T,C); Batch, Time, Channel
         logits = self.lm_head(tok_emb) # (B,T, vocab_size)
-        
+
         if targets is None:
             loss = None
         else:
