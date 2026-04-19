@@ -21,8 +21,8 @@ with open('dataset/tiny.txt', 'r', encoding='utf-8') as f:
 # ### 1. See the dataset
 
 
-print('First 500 characters of the dataset:')
-print(text[:500])
+#print('First 500 characters of the dataset:')
+#print(text[:500])
 
 # ## 2. Character level Encoding and Decoding Strategy
 
@@ -57,13 +57,13 @@ print(decoding(encoding("ADD")))
 # ## 3. Tokenise the dataset based on Encoding strategy defined in previous step
 
 data = torch.tensor(encoding(text), dtype=torch.long)
-print(data.shape, data.dtype)
+#print(data.shape, data.dtype)
 
 # %% [markdown]
 # ## 3.1 Data Tensor
 
 # %%
-print('CP 1: Data Tensor first 500 characters', data[:500])
+#print('CP 1: Data Tensor first 500 characters', data[:500])
 
 # %% [markdown]
 # ## 3.2 Train and Test splits
@@ -102,7 +102,7 @@ y = train_data[1:context_length+1]
 for t in range(context_length):
     context = x[:t+1]
     target = y[t]
-    print(f'When the input is {context_length} the target is {target}')
+    #print(f'When the input is {context_length} the target is {target}')
 
 # The idea to train the model from 1 to context_length is to make sure the model get use to seeing the different lenght of inputs for infeering the next character.
 
@@ -122,24 +122,24 @@ def get_batch(split):
     return x, y
 
 xb,yb = get_batch('train')
-print('Input batch (x):')
-print(xb.shape)
-print(xb)
-print('Target batch (y):')
-print(yb.shape)
-print(yb)
+# print('Input batch (x):')
+# print(xb.shape)
+# print(xb)
+# print('Target batch (y):')
+# print(yb.shape)
+# print(yb)
 
 # The learning from out output is that there is a 4x8 array/tensor that is being used to train the model.
 
-print('' )
+# print('' )
 for b in range(batch_size):
     for t in range(context_length):
         context = xb[b, :t+1].tolist()
         target = yb[b, t].item()
-        print(f'When the input is {context} the target is {target}')
+        #print(f'When the input is {context} the target is {target}')
 
 # %%
-print(xb)
+#print(xb)
 
 # %% [markdown]
 # ## Training hardware is
@@ -200,10 +200,10 @@ class BigramLanguageModel(nn.Module):
         return idx
 
     
-m = BigramLanguageModel()
-logits, loss = m(xb, yb)
-print(logits.shape)
-print(loss)
+# m = BigramLanguageModel()
+# logits, loss = m(xb, yb)
+# print(logits.shape)
+# print(loss)
 # Expectation is -ln(1/65) = 4,17
 
 model = BigramLanguageModel()
