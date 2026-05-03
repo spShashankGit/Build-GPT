@@ -260,5 +260,11 @@ Step 3: Optimize the policy against the reward model using a reinforcement learn
 - This is who alligning model - this takes the model from document completer to question answerer.
 This is internal info of OpenAI and is not publically available.
 
+Summary:
+1. Trained, decoder only transformer, following the famous paper "Attention is all you need" https://arxiv.org/pdf/1706.03762.pdf
+2. Trained it on the tiny shakepeare dataset, and got some results.
+3. Training code is roughly 240 LOC.
+4. Architecturally this is similar to what ChatGPT is doing. The order of magniture is roughly 1000x to 1 Million times smaller.
+5. Fine tuning is not tackled here.This could be simple supervised fine-tuning or could be more fancy like a reward model and reinforcement learning.
 Source: Andrej Karpathy's YouTube video on "How to Build GPT" https://www.youtube.com/watch?v=Te5rOTcEJYc&t=0s
 """
