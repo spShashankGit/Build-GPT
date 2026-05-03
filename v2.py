@@ -240,17 +240,25 @@ Result:
 In the document generator, try to complete the sequence.
 If you give it a questions, it will give you more questions. It will look up what a close document will do in the training data and of course you can also get undefined behaviour.
 
+
 2. Fine-tuning: After pre-training, the model is fine-tuned on a smaller, more specific dataset that is relevant to the task it will be used for. This stage helps the model adapt to the specific language and style of the target domain, such as customer service, technical support, or creative writing.
+Result: Align it to be the assistant.
 
+There are roughly 3 stages of training:
+Step 1: Collect demostration data and train a supervisied policy. 
+- In order of 1000s of examples.
+- These very large models are sample efficients therefore order of 1000s is enough. Fine tuning.
 
+Step 2: Collect comparison data and train a reward model.
+- Let the model respond
+- Different raiders look at the different responses and ranke them for their preferences as to which one is better than the other.
+- This is used to train the reward model.
 
-
-
-
-
-
-
-
+Step 3: Optimize the policy against the reward model using a reinforcement learning algorithm.
+- Ones the model is trained they run PPO, policy gradient, reinforecement learning optimizer to fine-tune this sampling policy.
+- Answers that ChatGPT now generates are expectd to score high rewards according to the reward model.
+- This is who alligning model - this takes the model from document completer to question answerer.
+This is internal info of OpenAI and is not publically available.
 
 Source: Andrej Karpathy's YouTube video on "How to Build GPT" https://www.youtube.com/watch?v=Te5rOTcEJYc&t=0s
 """
