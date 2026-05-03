@@ -85,6 +85,8 @@ class Head(nn.Module):
         self.value = nn.Linear(n_embd, head_size, bias=False)
         self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
 
+        self.dropout = nn.Dropout(dropout)
+
     def forward(self, x):
         B,T,C = x.shape
         k = self.key(x)      # (B,T,head_size)
@@ -94,6 +96,7 @@ class Head(nn.Module):
         wei = q @ k.transpose(-2 , -1) * C**-0.5  # (B,T,head_size) @ (B,head_size,T) -> (B,T,T)
         wei = wei.masked_fill(self.tril[:T,:T] == 0, float('-inf')) # (B,T,T) Do not associate with past
         wei = F.softmax(wei, dim=-1) # (B,T,T)
+        wei = self.dropout(wei) # This came from the paper, Dropout: A simple way to prevent neural networks from overfitting.
         # perform the weighted aggregation of the values
         v = self.value(x)     # (B,T,head_size)
         out = wei @ v         # (B,T,T) @ (B,T,head_size) -> (B,T,head_size)
@@ -108,6 +111,7 @@ class FeedForward(nn.Module):
             nn.Linear(n_embd, 4* n_embd),
             nn.ReLU(),
             nn.Linear(4* n_embd, n_embd),
+            nn.Dropout(dropout),
         )
 
 
@@ -138,12 +142,8 @@ class BigramLanguageModel(nn.Module):
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
 
-        self.blocks = nn.Sequential(
-            Block(n_embd, n_head=4),
-            Block(n_embd, n_head=4),
-            Block(n_embd, n_head=4),
-            Block(n_embd, n_head=4),
-        )
+        self.blocks = nn.Sequential(*[Block(n_embd, n_head=4) for _ in range(n_layer)])
+        self.ln_f = nn.LayerNorm(n_embd) # final layer norm
 
         #self.sa_head = MultiHeadAttention(4,n_embd//4) # 4-heads of 8-dimensional self-attention
         #self.ffwd = FeedForward(n_embd) # a simple linear layer followed by a non-linearity
