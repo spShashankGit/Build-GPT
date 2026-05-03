@@ -63,6 +63,18 @@ def get_batch(split):
 
 xb,yb = get_batch('train')
 
+class MultiHeadAttention(nn.Module):
+    """ multiple heads of self-attention in parallel """
+
+    def __init__(self, num_heads, head_size):
+        super().__init__()
+        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+        self.proj = nn.Linear(n_embd, n_embd)
+
+    def forward(self, x):
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        out = self.proj(out)
+        return out
 class Head(nn.Module):
     """ one head of self-attention """
 
@@ -123,8 +135,8 @@ class BigramLanguageModel(nn.Module):
             # crop idx to the last block_size tokens
             idx_cond = idx[:,-block_size:] # (B,T)
 
-            # get the predictions
-            logits, loss = self(idx)
+            # get the predictions for the cropped context only
+            logits, loss = self(idx_cond)
 
             # focus only on the last time step
             logits = logits[:, -1, :] # becomes (B,C)
@@ -148,7 +160,7 @@ print('Loss is ', loss)
 optimiszer = torch.optim.AdamW(m.parameters(), lr=1e-3)
 print(optimiszer)
 
-for steps in range(10000):
+for steps in range(max_iters):
     # sample a batch of data
     xb, yb = get_batch('train')
 
@@ -159,4 +171,8 @@ for steps in range(10000):
     optimiszer.zero_grad(set_to_none=True)
     loss.backward()
     optimiszer.step()
-print(f'train loss {loss.item()}')
+    print(f'train loss {loss.item()}')
+
+print('----')
+context = torch.zeros((1,1), dtype=torch.long, device=device)
+print(decoding(m.generate(context, max_new_tokens=1000)[0].tolist()))
