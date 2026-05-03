@@ -1,3 +1,7 @@
+# This is a decoder only transformer model
+# This is not a cross-attention mode.
+# Decoder only: We are only generating text and it is not dependent on any thing. - Triangular mask is decoder.
+# Original paper has encoder: because need to read the french and then put out the english.
 
 import torch
 import torch.nn as nn
@@ -220,3 +224,33 @@ for steps in range(max_iters):
 print('----')
 context = torch.zeros((1,1), dtype=torch.long, device=device)
 print(decoding(m.generate(context, max_new_tokens=1000)[0].tolist()))
+
+
+
+"""
+Training of the Chat-GPT has two stages
+1. Pre-training: Training on the large chunk of internet, decoder only model, to be able to babble only the text. This is similar to this v2.py file. Execept this is a tiny example. 
+Open-AI trains on sub-chunk of words and have vocabulary of about 50,000 elements. Their sequences are bit more condensed.
+Shakespeak dataset which has about 1 million tokens in our example, will have only (roughly)300,000 tokens in the OpenAI vocabulary.
+GPT paper is titled: "Language MOdels are Few-Shot learners" link to the paper: https://arxiv.org/pdf/2005.14165
+GPT-3 trained on 300 billion tokens, 12288 hidden layers, 96 attention heads, 175 billion parameters.
+Architecture is nearly identical to V2.py, training 300 billion tokens is a massive infrastructure challenge. 
+1000s of GPU having to talk to each other to train the model of this size.
+Result: 
+In the document generator, try to complete the sequence.
+If you give it a questions, it will give you more questions. It will look up what a close document will do in the training data and of course you can also get undefined behaviour.
+
+2. Fine-tuning: After pre-training, the model is fine-tuned on a smaller, more specific dataset that is relevant to the task it will be used for. This stage helps the model adapt to the specific language and style of the target domain, such as customer service, technical support, or creative writing.
+
+
+
+
+
+
+
+
+
+
+
+Source: Andrej Karpathy's YouTube video on "How to Build GPT" https://www.youtube.com/watch?v=Te5rOTcEJYc&t=0s
+"""
