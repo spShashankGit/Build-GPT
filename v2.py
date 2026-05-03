@@ -17,7 +17,7 @@ context_length = 256
 n_layer = 6
 n_head = 6
 dropout = 0.2
-
+#M1 at 3:12, A100 took 15 minutes. M1 took  25 hours is the estimation. Lets see. CPU is running at 98% capacity. saw completed at 16:07
 torch.manual_seed(1337)
 with open('dataset/tiny.txt', 'r', encoding='utf-8') as f:
     text = f.read()
